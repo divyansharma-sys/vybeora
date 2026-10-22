@@ -1,0 +1,20 @@
+# Ignore environment files
+.env
+.env.*
+!.env.example
+
+# Ignore virtual environments
+venv/
+.venv/
+
+# Ignore compiled python
+__pycache__/
+*.py[cod]
+
+# Ignore SQLite database
+*.sqlite3
+db.sqlite3
+
+# Ignore user media uploads
+media/*
+!media/.gitkeep

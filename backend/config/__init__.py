@@ -1,0 +1,3 @@
+"""
+Vybeora Django Configuration Package.
+"""
