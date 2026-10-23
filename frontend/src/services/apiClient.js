@@ -14,16 +14,28 @@ const isNativeAndroid = typeof window !== 'undefined' && (
 // because there is no Vite dev proxy inside the mobile WebView.
 // It must target the backend host directly.
 const getBaseUrl = () => {
+  // If explicitly configured in Vite build or runtime
+  if (import.meta.env.VITE_API_BASE_URL && import.meta.env.VITE_API_BASE_URL !== '/api') {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
   // If in native Android app
   if (isNativeAndroid) {
     return 'http://192.168.1.16:8000/api';
   }
   // If accessing from a phone browser over Wi-Fi (e.g. http://192.168.1.16:5173/)
-  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    // When using phone browser with Vite on local network:
-    return `http://${window.location.hostname}:8000/api`;
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host !== 'localhost' && host !== '127.0.0.1') {
+      // If deployed on Vercel or cloud domain (e.g. vybeora.vercel.app)
+      if (host.includes('vercel.app')) {
+        // Fallback to configured cloud backend or relative /api if reverse proxy configured
+        return import.meta.env.VITE_PROD_API_BASE_URL || '/api';
+      }
+      // When testing on local Wi-Fi (e.g. 192.168.x.x)
+      return `http://${host}:8000/api`;
+    }
   }
-  // Standard desktop browser through Vite dev proxy
+  // Standard desktop development through Vite dev proxy
   return '/api';
 };
 

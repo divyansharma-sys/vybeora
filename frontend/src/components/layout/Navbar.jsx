@@ -127,13 +127,14 @@ export function Navbar() {
   };
 
   const isHomePage = location.pathname === '/';
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
   return (
     <header className="navbar">
       <div className="container navbar-container">
         {/* Brand Logo & Back to Home */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-          {!isHomePage && (
+          {!isHomePage && !isAuthPage && (
             <button
               onClick={() => navigate('/')}
               className="btn btn-secondary btn-sm"

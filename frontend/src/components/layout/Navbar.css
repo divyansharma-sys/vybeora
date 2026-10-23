@@ -67,6 +67,18 @@
   font-weight: 500;
 }
 
+@media (max-width: 640px) {
+  .brand-tagline {
+    display: none;
+  }
+  .brand-title {
+    font-size: 1.15rem;
+  }
+  .navbar-container {
+    padding: 0 var(--space-4);
+  }
+}
+
 /* ==========================================================================
    FUTURISTIC CAPSULE ISLAND NAVIGATION
    ========================================================================== */
