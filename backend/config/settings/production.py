@@ -31,8 +31,20 @@ SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-# Production Database: SQLite fallback if no POSTGRES / DATABASE_URL configured
-if os.getenv("DB_NAME") or os.getenv("DATABASE_URL"):
+# Production Database: Supabase / PostgreSQL via DATABASE_URL or SQLite fallback
+import dj_database_url
+
+database_url = os.getenv("DATABASE_URL")
+if database_url:
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=database_url,
+            conn_max_age=600,
+            conn_health_checks=True,
+            ssl_require=True,
+        )
+    }
+elif os.getenv("DB_NAME"):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
