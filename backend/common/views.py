@@ -43,8 +43,10 @@ class HealthCheckView(APIView):
         response_payload = {
             "status": "healthy" if is_healthy else "degraded",
             "service": "vybeora-backend",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "environment": "development" if settings.DEBUG else "production",
+            "cors_allow_all": getattr(settings, "CORS_ALLOW_ALL_ORIGINS", None),
+            "cors_origins": getattr(settings, "CORS_ALLOWED_ORIGINS", []),
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "checks": {
                 "database": db_status,
