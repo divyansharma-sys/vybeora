@@ -963,9 +963,9 @@ export function WatchRoomPage() {
       return;
     }
 
-    // Size limit check (500MB)
-    if (file.size > 500 * 1024 * 1024) {
-      setFileError('File size exceeds the 500MB limit.');
+    // Size limit check (4GB / 4096MB for full HD feature films)
+    if (file.size > 4096 * 1024 * 1024) {
+      setFileError('File size exceeds the 4GB maximum limit. Please choose a video under 4GB.');
       setSelectedFile(null);
       return;
     }
@@ -2160,7 +2160,7 @@ export function WatchRoomPage() {
                   </div>
                 ) : (
                   <div style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)', marginTop: 'var(--space-2)' }}>
-                    Supported formats: MP4, WebM, MKV, MOV (Max: 500MB)
+                    Supported formats: MP4, WebM, MKV, MOV (Max: 4GB)
                   </div>
                 )}
               </div>

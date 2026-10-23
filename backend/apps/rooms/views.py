@@ -174,7 +174,7 @@ ALLOWED_VIDEO_MIME_TYPES = {
     "video/quicktime",
     "application/octet-stream",  # some browsers send this for mp4/webm
 }
-MAX_FILE_SIZE = 500 * 1024 * 1024  # 500 MB limit
+MAX_FILE_SIZE = getattr(settings, "MAX_UPLOAD_SIZE_MB", 4096) * 1024 * 1024  # 4 GB movie upload limit
 
 
 class RoomVideoUploadView(APIView):

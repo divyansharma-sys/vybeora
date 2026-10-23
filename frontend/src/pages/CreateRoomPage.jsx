@@ -73,8 +73,8 @@ export function CreateRoomPage({ initialTab = 'create' }) {
       return;
     }
 
-    if (file.size > 500 * 1024 * 1024) {
-      setFileError('File size exceeds 500MB maximum upload limit.');
+    if (file.size > 4096 * 1024 * 1024) {
+      setFileError('File size exceeds 4GB maximum upload limit. Please choose a file under 4GB.');
       setLocalFile(null);
       return;
     }
@@ -358,7 +358,7 @@ export function CreateRoomPage({ initialTab = 'create' }) {
                     </div>
                   ) : (
                     <div style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)', marginTop: 'var(--space-1)' }}>
-                      Supports MP4, WebM, MKV, MOV (up to 500MB)
+                      Supports MP4, WebM, MKV, MOV (up to 4GB)
                     </div>
                   )}
 
