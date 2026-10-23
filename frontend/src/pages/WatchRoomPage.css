@@ -5,14 +5,14 @@
 .watch-room-dashboard {
   max-width: 1720px;
   margin: 0 auto;
-  padding: var(--space-4) var(--space-6) var(--space-12) var(--space-6);
+  padding: var(--space-3) var(--space-5) var(--space-8) var(--space-5);
 }
 
 .watch-room-layout {
   display: grid;
   grid-template-columns: 240px 1fr 340px;
-  gap: var(--space-5);
-  min-height: calc(100vh - var(--topbar-height) - 40px);
+  gap: var(--space-4);
+  min-height: calc(100vh - 80px);
 }
 
 @media (max-width: 1280px) {
