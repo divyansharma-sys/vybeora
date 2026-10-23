@@ -66,3 +66,12 @@
   font-size: var(--text-xs);
   color: var(--text-muted);
 }
+
+@media (max-width: 768px) {
+  /* On mobile app view, hide traditional website footer completely
+     so the screen feels like a native mobile cinema app */
+  .footer {
+    display: none !important;
+  }
+}
+
