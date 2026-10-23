@@ -74,11 +74,22 @@
 }
 
 @media (max-width: 640px) {
+  .navbar {
+    height: 3.5rem !important;
+  }
   .brand-tagline {
     display: none !important;
   }
   .brand-title {
     font-size: 1.15rem;
+  }
+  .brand-logo-icon {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  .brand-logo-icon svg {
+    width: 15px !important;
+    height: 15px !important;
   }
   .navbar-container {
     padding: 0 var(--space-3);

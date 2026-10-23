@@ -9,10 +9,79 @@ import './HomePage.css';
 
 const GENRES = ['All', 'Action', 'Comedy', 'Drama', 'Sci-Fi', 'Thriller', 'Romance'];
 
+const CURATED_FALLBACK_MOVIES = [
+  {
+    id: 1,
+    title: 'Night of the Living Dead',
+    genre: 'Horror • Classic',
+    year: 1968,
+    duration: '1h 36m',
+    rating: 7.9,
+    description: "George A. Romero's groundbreaking independent horror masterpiece. A disparate group of individuals seeks refuge in an abandoned farmhouse when the dead reanimate.",
+    poster_url: 'https://upload.wikimedia.org/wikipedia/commons/a/a1/Night_of_the_Living_Dead-1.jpg',
+    is_featured: true,
+  },
+  {
+    id: 2,
+    title: 'Charade',
+    genre: 'Mystery • Romance • Thriller',
+    year: 1963,
+    duration: '1h 53m',
+    rating: 7.9,
+    description: "Stanley Donen's iconic mystery starring Cary Grant and Audrey Hepburn. A young widow in Paris is pursued by conspirators seeking her late husband's hidden fortune.",
+    poster_url: 'https://upload.wikimedia.org/wikipedia/commons/f/fd/Charade_%281963_poster%29.jpg',
+    is_featured: true,
+  },
+  {
+    id: 3,
+    title: 'The General',
+    genre: 'Action • Comedy • Classic',
+    year: 1926,
+    duration: '1h 15m',
+    rating: 8.1,
+    description: "Buster Keaton's comedy and action masterpiece, celebrated for authentic locomotive stunts, physical genius, and visual storytelling.",
+    poster_url: 'https://upload.wikimedia.org/wikipedia/commons/c/cd/The_general_movie_poster.jpg',
+    is_featured: false,
+  },
+  {
+    id: 4,
+    title: 'Big Buck Bunny',
+    genre: 'Animation • Comedy • Family',
+    year: 2008,
+    duration: '10m',
+    rating: 8.0,
+    description: "The acclaimed open-source animated short film by the Blender Institute. A gentle giant rabbit seeks justice against forest bullies.",
+    poster_url: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Big_buck_bunny_poster_big.jpg',
+    is_featured: false,
+  },
+  {
+    id: 5,
+    title: 'Tears of Steel',
+    genre: 'Sci-Fi • Action',
+    year: 2012,
+    duration: '12m',
+    rating: 7.2,
+    description: "Blender Foundation's open-source live-action VFX project set in dystopian Amsterdam exploring cybernetic technology.",
+    poster_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Tos-poster.png/960px-Tos-poster.png.jpg',
+    is_featured: false,
+  },
+  {
+    id: 6,
+    title: 'Carnival of Souls',
+    genre: 'Horror • Mystery • Cult',
+    year: 1962,
+    duration: '1h 18m',
+    rating: 7.1,
+    description: "Herk Harvey's eerie, atmospheric cult horror film following an organist drawn to an abandoned pavilion.",
+    poster_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Carnival_of_Souls_poster.jpg/800px-Carnival_of_Souls_poster.jpg',
+    is_featured: false,
+  },
+];
+
 export function HomePage() {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
-  const [movies, setMovies] = useState([]);
+  const [movies, setMovies] = useState(CURATED_FALLBACK_MOVIES);
   const [activeRooms, setActiveRooms] = useState([]);
   const [friendsList, setFriendsList] = useState([]);
   const [recentSessions, setRecentSessions] = useState([]);
@@ -46,7 +115,11 @@ export function HomePage() {
       const friendsRes = isAuthenticated ? results[2] : null;
       const sessionRes = isAuthenticated && user?.username ? results[3] : null;
 
-      setMovies(movieRes?.results || []);
+      if (movieRes?.results && movieRes.results.length > 0) {
+        setMovies(movieRes.results);
+      } else {
+        setMovies(CURATED_FALLBACK_MOVIES);
+      }
       setActiveRooms(roomRes?.results || []);
       if (friendsRes) setFriendsList(friendsRes?.friends || []);
       if (sessionRes) setRecentSessions(sessionRes?.results || []);
