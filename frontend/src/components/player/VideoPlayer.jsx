@@ -234,7 +234,60 @@ export function VideoPlayer({
     setVideoError(msg);
   };
 
-  // 3. Fallback for Unavailable Media Sources
+  // 3. Prompt for Local Device Movie File
+  if (sourceType === 'local_needs_file') {
+    return (
+      <div
+        className="flex-center"
+        style={{
+          width: '100%',
+          height: '100%',
+          backgroundColor: '#0a0e17',
+          color: 'var(--text-secondary)',
+          flexDirection: 'column',
+          padding: 'var(--space-8)',
+          textAlign: 'center',
+        }}
+      >
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-3)' }}>🎬</div>
+        <h3 style={{ color: 'var(--accent-gold, #f59e0b)', marginBottom: 'var(--space-2)' }}>
+          {movie?.title || 'Selected Local Movie'}
+        </h3>
+        <p style={{ maxWidth: '480px', fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', marginBottom: 'var(--space-5)' }}>
+          This watch room was configured for your local video file. Choose or confirm the video file from your device to begin instant playback.
+        </p>
+        <label
+          className="btn btn-primary"
+          style={{
+            cursor: 'pointer',
+            padding: '0.6rem 1.4rem',
+            fontWeight: 600,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          📂 Select Movie File from Device
+          <input
+            type="file"
+            accept="video/*,.mkv,.mp4,.webm,.mov"
+            style={{ display: 'none' }}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file && onSeek) {
+                const url = URL.createObjectURL(file);
+                if (movie?.onLocalFileLoaded) {
+                  movie.onLocalFileLoaded(url, file);
+                }
+              }
+            }}
+          />
+        </label>
+      </div>
+    );
+  }
+
+  // 4. Fallback for Unavailable Media Sources
   if (sourceType === 'unavailable' || (!videoUrl && !videoId)) {
     return (
       <div

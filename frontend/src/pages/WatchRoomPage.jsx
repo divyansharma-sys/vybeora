@@ -124,14 +124,16 @@ export function WatchRoomPage() {
     try {
       const data = await roomService.getRoomByCode(roomCode);
       let roomData = data;
+      // Only enrich with catalog movie if the title strictly matches a verified catalog title
       if (!data?.movie_details && (data?.movie_title || data?.title)) {
         try {
+          const roomTitleNorm = (data.movie_title || data.title).trim().toLowerCase();
           const movieSearch = await movieService.getMovies({ search: data.movie_title || data.title });
-          const matchedMovie = movieSearch?.results?.find(
-            (m) => m.title.toLowerCase() === (data.movie_title || data.title).toLowerCase()
-          ) || movieSearch?.results?.[0];
-          if (matchedMovie) {
-            roomData = { ...data, movie_details: matchedMovie };
+          const exactMatch = movieSearch?.results?.find(
+            (m) => m.title.trim().toLowerCase() === roomTitleNorm
+          );
+          if (exactMatch) {
+            roomData = { ...data, movie_details: exactMatch };
           }
         } catch (mErr) {
           console.warn('Could not enrich room movie details:', mErr);
@@ -141,7 +143,7 @@ export function WatchRoomPage() {
 
       // Check if user launched this room instantly with a local movie file
       const pendingLocal = window.__vybeora_pending_local_movie;
-      if (pendingLocal && pendingLocal.roomCode === roomCode) {
+      if (pendingLocal && (pendingLocal.roomCode === roomCode || !pendingLocal.roomCode)) {
         localVideoObjectUrlRef.current = pendingLocal.objectUrl;
         setActiveVideoSource({
           title: `${pendingLocal.name.replace(/\.[^/.]+$/, '')} (Instant Play)`,
@@ -163,6 +165,22 @@ export function WatchRoomPage() {
             license_info: 'Room Uploaded Video',
           });
         }
+      } else if (!data?.movie_details && data?.movie_title) {
+        // Check if there is stored session metadata for this local room
+        try {
+          const storedLocalMeta = sessionStorage.getItem(`vybeora_local_${roomCode}`);
+          if (storedLocalMeta) {
+            const parsed = JSON.parse(storedLocalMeta);
+            setActiveVideoSource({
+              title: `${parsed.title || data.movie_title}`,
+              source_type: 'local_needs_file',
+              source_url: '',
+              source_video_id: 'local_needs_file',
+              license_info: 'Local File Selected',
+              filename: parsed.name,
+            });
+          }
+        } catch (_) {}
       }
 
       if (roomData?.watchlist_items) {
@@ -944,7 +962,23 @@ export function WatchRoomPage() {
     ? room.uploaded_videos[room.uploaded_videos.length - 1]
     : null;
 
-  const activeMovie = activeVideoSource || room.movie_details || (latestUploadVideo ? {
+  const activeMovie = activeVideoSource ? {
+    ...activeVideoSource,
+    onLocalFileLoaded: (objUrl, file) => {
+      localVideoObjectUrlRef.current = objUrl;
+      setActiveVideoSource({
+        title: `${file.name.replace(/\.[^/.]+$/, '')} (Instant Play)`,
+        source_type: 'direct_video',
+        source_url: objUrl,
+        source_video_id: 'local_instant',
+        license_info: 'Local Device Playback',
+        is_local_device: true,
+      });
+      setCurrentTime(0);
+      setIsPlaying(true);
+      showToast(`Loaded "${file.name}"!`, 'success');
+    },
+  } : room.movie_details || (latestUploadVideo ? {
     title: latestUploadVideo.title || room.movie_title || room.title,
     source_type: 'direct_video',
     source_url: latestUploadVideo.playback_url,
