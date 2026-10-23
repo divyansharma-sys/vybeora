@@ -16,23 +16,6 @@
   align-items: start;
 }
 
-@media (max-width: 1300px) {
-  .midnight-dashboard-grid {
-    grid-template-columns: 220px 1fr;
-  }
-  .midnight-right-rail {
-    display: none;
-  }
-}
-
-@media (max-width: 860px) {
-  .midnight-dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-  .midnight-sidebar {
-    display: none;
-  }
-}
 
 /* =========================================================
    COLUMN 1: Left Navigation & Activity Sidebar
@@ -757,3 +740,119 @@
   font-size: 0.72rem;
   color: var(--text-secondary);
 }
+
+/* ==============================================================================
+   RESPONSIVE CINEMA BREAKPOINTS (Mobile Phone & Tablet Optimizations)
+   ============================================================================== */
+
+@media (max-width: 1200px) {
+  .midnight-dashboard-grid {
+    grid-template-columns: 220px 1fr;
+  }
+  .midnight-right-rail {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .midnight-dashboard-container {
+    padding: var(--space-3) var(--space-3) var(--space-10) var(--space-3);
+  }
+
+  .midnight-dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  /* On mobile phones, hide the redundant desktop sidebar because navigation
+     is already available via mobile drawer & bottom bar */
+  .midnight-sidebar {
+    display: none !important;
+  }
+
+  .midnight-right-rail {
+    display: none !important;
+  }
+
+  .featured-hero-media {
+    min-height: 280px;
+    padding: var(--space-6) var(--space-4);
+    background-position: center;
+  }
+
+  .featured-hero-gradient {
+    background: linear-gradient(
+      180deg,
+      rgba(11, 15, 23, 0.4) 0%,
+      rgba(11, 15, 23, 0.88) 50%,
+      rgba(11, 15, 23, 0.98) 100%
+    );
+  }
+
+  .hero-screen-watermark {
+    display: none;
+  }
+
+  .featured-headline {
+    font-size: 1.65rem;
+  }
+
+  .featured-copy {
+    font-size: 0.82rem;
+    margin-bottom: var(--space-4);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .middle-dashboard-split {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .explore-section {
+    padding: var(--space-4);
+  }
+
+  .explore-posters-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .midnight-dashboard-container {
+    padding: var(--space-2) var(--space-2) var(--space-10) var(--space-2);
+  }
+
+  .featured-hero-media {
+    min-height: 240px;
+    padding: var(--space-5) var(--space-3);
+    border-radius: var(--radius-xl);
+  }
+
+  .featured-headline {
+    font-size: 1.4rem;
+  }
+
+  .continue-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .continue-poster {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+
+  .watchlist-mini-grid {
+    overflow-x: auto;
+    padding-bottom: var(--space-2);
+  }
+
+  .watchlist-mini-poster {
+    min-width: 90px;
+  }
+}
+

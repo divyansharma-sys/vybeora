@@ -392,7 +392,7 @@ export function Navbar() {
                 <div className="nav-avatar" style={{ width: '26px', height: '26px', fontSize: '0.75rem' }}>
                   {(user?.profile?.display_name || user?.full_name || user?.username || 'U')[0].toUpperCase()}
                 </div>
-                <span style={{ fontSize: 'var(--text-xs)', maxWidth: '110px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span className="user-pill-name" style={{ fontSize: 'var(--text-xs)', maxWidth: '110px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {user?.profile?.display_name || user?.full_name || user?.username}
                 </span>
                 <span style={{ fontSize: '0.65rem' }}>▼</span>
@@ -487,7 +487,7 @@ export function Navbar() {
             <span>Get APK</span>
           </a>
 
-          <Link to="/create-room" className="btn btn-primary btn-sm">
+          <Link to="/create-room" className="btn btn-primary btn-sm btn-sm-mobile">
             <span>+</span> Create Room
           </Link>
 
