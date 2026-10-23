@@ -464,3 +464,76 @@
   transform: scale(1.25);
   border-color: var(--accent-violet);
 }
+
+/* ==============================================================================
+   Phone & Mobile Responsive Optimizations
+   ============================================================================== */
+@media (max-width: 768px) {
+  .watch-room-dashboard {
+    padding: var(--space-2) var(--space-2) var(--space-8) var(--space-2);
+  }
+
+  .watch-room-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .cinema-right-rail {
+    width: 100%;
+    max-height: 480px;
+  }
+
+  .cinema-screen-wrapper {
+    border-radius: var(--radius-lg);
+  }
+
+  .film-info-tag {
+    top: 8px;
+    left: 8px;
+    padding: 0.35rem 0.6rem;
+  }
+
+  .film-info-title {
+    max-width: 160px;
+    font-size: 0.75rem;
+  }
+
+  .film-info-meta {
+    font-size: 0.65rem;
+  }
+
+  .film-synced-indicator {
+    top: 8px;
+    right: 8px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.65rem;
+  }
+
+  .chat-messages-scroll {
+    max-height: 320px;
+  }
+}
+
+@media (max-width: 480px) {
+  .watch-room-dashboard {
+    padding: var(--space-1) var(--space-1) var(--space-6) var(--space-1);
+  }
+
+  .cinema-screen-wrapper {
+    aspect-ratio: 16 / 9;
+    min-height: 220px;
+  }
+
+  .film-info-title {
+    max-width: 120px;
+  }
+
+  .rail-tab-btn {
+    padding: 0.45rem 0.25rem;
+    font-size: 0.68rem;
+  }
+
+  .chat-messages-scroll {
+    max-height: 260px;
+  }
+}

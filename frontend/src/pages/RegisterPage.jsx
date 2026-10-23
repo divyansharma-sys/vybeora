@@ -66,27 +66,6 @@ export function RegisterPage() {
   return (
     <div className="container flex-center" style={{ minHeight: 'calc(100vh - var(--navbar-height) - 150px)', padding: 'var(--space-12) var(--space-4)' }}>
       <div className="card-cinema" style={{ width: '100%', maxWidth: '480px', padding: 'var(--space-8)' }}>
-        {/* Back to Home Button */}
-        <div style={{ marginBottom: 'var(--space-4)' }}>
-          <Link
-            to="/"
-            className="btn btn-secondary btn-sm"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              borderRadius: 'var(--radius-full)',
-              padding: '0.35rem 0.8rem',
-              fontSize: 'var(--text-xs)',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-primary)',
-            }}
-          >
-            ← Back to Home
-          </Link>
-        </div>
-
         {/* Brand Header */}
         <div style={{ textAlign: 'center', marginBottom: 'var(--space-6)' }}>
           <div className="badge badge-aurora" style={{ marginBottom: 'var(--space-3)' }}>
