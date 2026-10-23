@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import Avatar from '../components/common/Avatar';
+import Modal from '../components/common/Modal';
 
 export function FriendsPage() {
   const navigate = useNavigate();
@@ -15,6 +16,9 @@ export function FriendsPage() {
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [actionMsg, setActionMsg] = useState('');
+  const [friendToDelete, setFriendToDelete] = useState(null);
+  const [deletingFriend, setDeletingFriend] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     fetchFriends();
@@ -79,20 +83,28 @@ export function FriendsPage() {
 
   const handleRespond = async (friendshipId, action) => {
     try {
+      setErrorMessage(null);
       await authService.respondFriendRequest(friendshipId, action);
       fetchFriends();
     } catch (err) {
-      alert(err.message || 'Action failed');
+      setErrorMessage(err.message || 'Action failed');
     }
   };
 
-  const handleRemoveFriend = async (friendshipId) => {
-    if (!window.confirm('Are you sure you want to remove this friend?')) return;
+  const confirmDeleteFriend = async () => {
+    if (!friendToDelete) return;
+    setDeletingFriend(true);
+    setErrorMessage(null);
     try {
-      await authService.removeFriend(friendshipId);
+      await authService.removeFriend(friendToDelete.friendship_id);
+      setFriendToDelete(null);
+      setActionMsg(`Removed friend.`);
+      setTimeout(() => setActionMsg(''), 4000);
       fetchFriends();
     } catch (err) {
-      alert(err.message || 'Failed to remove friend');
+      setErrorMessage(err.message || 'Failed to remove friend');
+    } finally {
+      setDeletingFriend(false);
     }
   };
 
@@ -365,7 +377,7 @@ export function FriendsPage() {
                     🎬 Host Party
                   </Link>
                   <button
-                    onClick={() => handleRemoveFriend(friend.friendship_id)}
+                    onClick={() => setFriendToDelete(friend)}
                     className="btn btn-ghost btn-sm"
                     style={{ fontSize: '0.7rem', color: 'var(--text-muted)', padding: '0.3rem 0.5rem' }}
                     title="Remove friend"
@@ -378,6 +390,41 @@ export function FriendsPage() {
           </div>
         )}
       </div>
+
+      {/* In-Screen Remove Friend Confirmation Modal */}
+      <Modal
+        isOpen={Boolean(friendToDelete)}
+        onClose={() => !deletingFriend && setFriendToDelete(null)}
+        title="Remove Friend"
+      >
+        <div style={{ padding: 'var(--space-2) 0' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', marginBottom: 'var(--space-4)' }}>
+            Are you sure you want to remove <strong>@{friendToDelete?.username}</strong> from your friends list?
+          </p>
+          {errorMessage && (
+            <div style={{ color: 'var(--status-error)', fontSize: 'var(--text-xs)', marginBottom: 'var(--space-3)' }}>
+              ⚠️ {errorMessage}
+            </div>
+          )}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-3)' }}>
+            <button
+              onClick={() => setFriendToDelete(null)}
+              className="btn btn-ghost btn-sm"
+              disabled={deletingFriend}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmDeleteFriend}
+              className="btn btn-sm"
+              style={{ background: '#dc2626', color: '#fff', border: 'none', fontWeight: 600 }}
+              disabled={deletingFriend}
+            >
+              {deletingFriend ? 'Removing...' : 'Remove Friend'}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

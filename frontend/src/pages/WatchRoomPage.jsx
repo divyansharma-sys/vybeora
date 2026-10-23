@@ -56,6 +56,11 @@ export function WatchRoomPage() {
   // Floating reactions state
   const [reactions, setReactions] = useState([]);
 
+  // Confirm Close / Delete Room Modal state (replaces native browser window.confirm alert)
+  const [confirmCloseModalOpen, setConfirmCloseModalOpen] = useState(false);
+  const [endingParty, setEndingParty] = useState(false);
+  const [closeError, setCloseError] = useState(null);
+
   // Invite Modal state
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -1179,32 +1184,9 @@ export function WatchRoomPage() {
             (currentUsername && room.host_name.toLowerCase() === currentUsername.toLowerCase())
           ) && (
             <button
-              onClick={async () => {
-                const confirmed = window.confirm(`Are you sure you want to close room "${room.title || room.code}"? This will save your movie night memory and close the party.`);
-                if (!confirmed) return;
-                try {
-                  // 1. Archive movie night memory
-                  try {
-                    await roomService.saveMovieSession({
-                      room_code: roomCode,
-                      title: room.title || 'Movie Night',
-                      movie_title: activeMovie?.title || room.movie_title || room.title,
-                      movie_poster: activeMovie?.poster_url || '',
-                      host_username: user?.username || currentUsername,
-                      participants: participantsList.map((p) => p.username),
-                      total_messages_count: messages.length,
-                      vibe_tag: 'Private Movie Night',
-                    });
-                  } catch (archiveErr) {
-                    console.warn('Could not archive session memory:', archiveErr);
-                  }
-
-                  // 2. Delete room
-                  await roomService.deleteRoom(roomCode);
-                  navigate('/profile');
-                } catch (e) {
-                  alert('Failed to delete room: ' + (e.message || 'Server error'));
-                }
+              onClick={() => {
+                setCloseError(null);
+                setConfirmCloseModalOpen(true);
               }}
               className="btn btn-outline btn-sm"
               style={{
@@ -2437,6 +2419,113 @@ export function WatchRoomPage() {
               disabled={isUploading}
             >
               Cancel
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* In-Screen Delete / Close Party Confirmation Modal (No browser alerts) */}
+      <Modal
+        isOpen={confirmCloseModalOpen}
+        onClose={() => !endingParty && setConfirmCloseModalOpen(false)}
+        title="End Party & Save Memory"
+      >
+        <div style={{ padding: 'var(--space-2) 0' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--space-3)',
+              marginBottom: 'var(--space-4)',
+              padding: 'var(--space-3) var(--space-4)',
+              background: 'rgba(239, 68, 68, 0.08)',
+              border: '1px solid rgba(239, 68, 68, 0.25)',
+              borderRadius: 'var(--radius-md)',
+            }}
+          >
+            <span style={{ fontSize: '1.5rem' }}>⚠️</span>
+            <div>
+              <div style={{ fontWeight: 600, color: '#fca5a5', fontSize: 'var(--text-sm)' }}>
+                Are you sure you want to close this room?
+              </div>
+              <div style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)', marginTop: '2px' }}>
+                "{room?.title || roomCode}" will be permanently closed for all participants.
+              </div>
+            </div>
+          </div>
+
+          <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', lineHeight: '1.6', marginBottom: 'var(--space-5)' }}>
+            Closing this lounge will automatically archive this watch session to your <strong>Movie Memories</strong> on your profile, save your chat count, and gracefully exit all viewers.
+          </p>
+
+          {closeError && (
+            <div
+              style={{
+                marginBottom: 'var(--space-4)',
+                padding: 'var(--space-3)',
+                background: 'rgba(239, 68, 68, 0.15)',
+                border: '1px solid var(--status-error)',
+                borderRadius: 'var(--radius-sm)',
+                color: '#fca5a5',
+                fontSize: 'var(--text-xs)',
+              }}
+            >
+              ⚠️ {closeError}
+            </div>
+          )}
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-3)' }}>
+            <button
+              onClick={() => setConfirmCloseModalOpen(false)}
+              className="btn btn-ghost btn-sm"
+              disabled={endingParty}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={async () => {
+                setEndingParty(true);
+                setCloseError(null);
+                try {
+                  // 1. Archive movie night memory
+                  try {
+                    await roomService.saveMovieSession({
+                      room_code: roomCode,
+                      title: room?.title || 'Movie Night',
+                      movie_title: activeMovie?.title || room?.movie_title || room?.title || 'Featured Film',
+                      movie_poster: activeMovie?.poster_url || '',
+                      host_username: user?.username || currentUsername,
+                      participants: participantsList.map((p) => p.username),
+                      total_messages_count: messages.length,
+                      vibe_tag: 'Private Movie Night',
+                    });
+                  } catch (archiveErr) {
+                    console.warn('Could not archive session memory:', archiveErr);
+                  }
+
+                  // 2. Delete room
+                  await roomService.deleteRoom(roomCode);
+                  setConfirmCloseModalOpen(false);
+                  navigate('/profile');
+                } catch (e) {
+                  setCloseError('Could not close room: ' + (e.message || 'Server error. Please try again.'));
+                } finally {
+                  setEndingParty(false);
+                }
+              }}
+              className="btn btn-sm"
+              style={{
+                background: '#dc2626',
+                color: '#ffffff',
+                border: 'none',
+                fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)',
+              }}
+              disabled={endingParty}
+            >
+              {endingParty ? 'Closing & Saving...' : '🏁 Yes, End Party & Save'}
             </button>
           </div>
         </div>
