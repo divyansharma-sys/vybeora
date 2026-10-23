@@ -367,4 +367,19 @@
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: var(--space-3);
   }
+
+  .auth-page-container {
+    padding: var(--space-4) var(--space-3) !important;
+    min-height: calc(100vh - var(--topbar-height) - 40px) !important;
+  }
+
+  .auth-card-cinema {
+    padding: var(--space-5) var(--space-4) !important;
+    border-radius: var(--radius-xl) !important;
+  }
+
+  .auth-grid-two-col {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-2) !important;
+  }
 }

@@ -64,8 +64,8 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="container flex-center" style={{ minHeight: 'calc(100vh - var(--navbar-height) - 150px)', padding: 'var(--space-12) var(--space-4)' }}>
-      <div className="card-cinema" style={{ width: '100%', maxWidth: '480px', padding: 'var(--space-8)' }}>
+    <div className="container flex-center auth-page-container" style={{ minHeight: 'calc(100vh - var(--navbar-height) - 150px)', padding: 'var(--space-12) var(--space-4)' }}>
+      <div className="card-cinema auth-card-cinema" style={{ width: '100%', maxWidth: '480px', padding: 'var(--space-8)' }}>
         {/* Brand Header */}
         <div style={{ textAlign: 'center', marginBottom: 'var(--space-6)' }}>
           <div className="badge badge-aurora" style={{ marginBottom: 'var(--space-3)' }}>
@@ -99,7 +99,7 @@ export function RegisterPage() {
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+          <div className="auth-grid-two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
             <div className="form-group">
               <label className="form-label">Email Address</label>
               <input

@@ -53,8 +53,8 @@ export function LoginPage() {
   };
 
   return (
-    <div className="container flex-center" style={{ minHeight: 'calc(100vh - var(--navbar-height) - 150px)', padding: 'var(--space-12) var(--space-4)' }}>
-      <div className="card-cinema" style={{ width: '100%', maxWidth: '440px', padding: 'var(--space-8)' }}>
+    <div className="container flex-center auth-page-container" style={{ minHeight: 'calc(100vh - var(--navbar-height) - 150px)', padding: 'var(--space-12) var(--space-4)' }}>
+      <div className="card-cinema auth-card-cinema" style={{ width: '100%', maxWidth: '440px', padding: 'var(--space-8)' }}>
         {/* Brand Header */}
         <div style={{ textAlign: 'center', marginBottom: 'var(--space-6)' }}>
           <div className="badge badge-accent" style={{ marginBottom: 'var(--space-3)' }}>

@@ -61,6 +61,9 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       const response = await authService.login({ identifier, password });
+      if (!response || !response.user || !response.tokens) {
+        throw new Error(response?.error?.message || response?.message || 'Login failed. Please check your credentials.');
+      }
       const { user: userData, tokens } = response;
 
       localStorage.setItem('vybeora_access_token', tokens.access);
@@ -79,6 +82,9 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       const response = await authService.signup(formData);
+      if (!response || !response.user || !response.tokens) {
+        throw new Error(response?.error?.message || response?.message || 'Registration failed. Please try again.');
+      }
       const { user: userData, tokens } = response;
 
       localStorage.setItem('vybeora_access_token', tokens.access);

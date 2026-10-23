@@ -6,14 +6,22 @@
 
 const isNativeAndroid = typeof window !== 'undefined' && (
   window.location.protocol === 'capacitor:' ||
-  window.location.protocol === 'http:' && window.location.hostname === 'localhost' && window.navigator?.userAgent?.includes('Android') ||
-  window.location.protocol === 'file:'
+  window.location.protocol === 'ionic:' ||
+  (window.location.protocol === 'http:' && window.location.hostname === 'localhost' && window.navigator?.userAgent?.includes('Android')) ||
+  (window.location.protocol === 'https:' && window.location.hostname === 'localhost' && window.navigator?.userAgent?.includes('Android')) ||
+  window.location.protocol === 'file:' ||
+  window.Capacitor !== undefined ||
+  window.isNative === true
 );
 
 // If running in Capacitor/Android native app, requests cannot use relative '/api'
 // because there is no Vite dev proxy inside the mobile WebView.
 // It must target the backend host directly.
 const getBaseUrl = () => {
+  // If in native Android APK / Capacitor webview, unconditionally target live Render backend
+  if (isNativeAndroid) {
+    return 'https://vybeora.onrender.com/api';
+  }
   // If explicitly configured in Vite build or runtime
   if (import.meta.env.VITE_API_BASE_URL && import.meta.env.VITE_API_BASE_URL !== '/api') {
     return import.meta.env.VITE_API_BASE_URL;
@@ -21,10 +29,6 @@ const getBaseUrl = () => {
   // If accessing from Vercel deployment (e.g. vybeora.vercel.app),
   // send API calls directly to Render backend (now permitted by production CORS)
   if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
-    return 'https://vybeora.onrender.com/api';
-  }
-  // If in native Android app
-  if (isNativeAndroid) {
     return 'https://vybeora.onrender.com/api';
   }
   // If accessing from a phone browser over Wi-Fi (e.g. http://192.168.1.16:5173/)

@@ -67,6 +67,12 @@
   font-weight: 500;
 }
 
+@media (max-width: 820px) {
+  .brand-tagline {
+    display: none !important;
+  }
+}
+
 @media (max-width: 640px) {
   .brand-tagline {
     display: none !important;
