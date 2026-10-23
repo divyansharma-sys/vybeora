@@ -60,6 +60,15 @@ export function WatchRoomPage() {
   const [confirmCloseModalOpen, setConfirmCloseModalOpen] = useState(false);
   const [endingParty, setEndingParty] = useState(false);
   const [closeError, setCloseError] = useState(null);
+  const [roomClosedBanner, setRoomClosedBanner] = useState(null); // in-screen overlay when host ends party
+  const [toastMessage, setToastMessage] = useState(null);
+
+  const showToast = (msg, type = 'info') => {
+    setToastMessage({ text: msg, type });
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3800);
+  };
 
   // Invite Modal state
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
@@ -357,8 +366,10 @@ export function WatchRoomPage() {
             ]);
           }
         } else if (type === 'room.closed') {
-          alert(payload?.message || 'This watch room has been closed by the host.');
-          navigate('/');
+          setRoomClosedBanner(payload?.message || 'This watch room has been closed by the host. Your session memory was preserved.');
+          setTimeout(() => {
+            navigate('/');
+          }, 3500);
         }
       } catch (e) {
         console.error('Failed to parse incoming WebSocket frame:', e);
@@ -896,8 +907,9 @@ export function WatchRoomPage() {
     try {
       await authService.sendRoomInvite(friendUsername, roomCode);
       setInvitingFriends((prev) => ({ ...prev, [friendUsername]: 'sent' }));
+      showToast(`Invitation sent to @${friendUsername}!`, 'success');
     } catch (e) {
-      alert(e.message || 'Failed to send invite');
+      showToast(e.message || 'Failed to send invite', 'error');
       setInvitingFriends((prev) => ({ ...prev, [friendUsername]: 'error' }));
     }
   };
@@ -1091,9 +1103,10 @@ export function WatchRoomPage() {
       setCurrentTime(0);
       setIsPlaying(true);
       setVideoModalOpen(false);
+      showToast(`Switched movie to "${movie.title}"`, 'success');
     } catch (err) {
       console.error('Select catalog movie failed:', err);
-      alert('Failed to switch room movie: ' + (err.message || 'Server error'));
+      showToast('Failed to switch room movie: ' + (err.message || 'Server error'), 'error');
     }
   };
 
@@ -1781,8 +1794,9 @@ export function WatchRoomPage() {
                               item_id: leaders[0].id,
                               user: currentUsername,
                             });
+                            showToast(`Now playing: ${leaders[0].movie_details?.title}!`, 'success');
                           } catch (err) {
-                            alert(err.message || 'Failed to start movie');
+                            showToast(err.message || 'Failed to start movie', 'error');
                           }
                         }}
                         className="btn btn-primary btn-sm"
@@ -1876,7 +1890,7 @@ export function WatchRoomPage() {
                                   username: currentUsername,
                                 });
                               } catch (err) {
-                                alert(err.message || 'Voting failed');
+                                showToast(err.message || 'Voting failed', 'error');
                               }
                             }}
                             className={hasVotedThis ? 'btn btn-primary btn-sm' : 'btn btn-outline btn-sm'}
@@ -1892,7 +1906,7 @@ export function WatchRoomPage() {
                                 try {
                                   await roomService.removeFromWatchlist(roomCode, item.id);
                                 } catch (err) {
-                                  alert(err.message || 'Failed to remove');
+                                  showToast(err.message || 'Failed to remove', 'error');
                                 }
                               }}
                               className="btn btn-ghost btn-sm"
@@ -2382,8 +2396,9 @@ export function WatchRoomPage() {
                                 });
                                 setActiveTab('watchlist');
                                 setVideoModalOpen(false);
+                                showToast(`Added "${m.title}" to shared watchlist!`, 'success');
                               } catch (err) {
-                                alert(err.message || 'Already in watchlist');
+                                showToast(err.message || 'Already in watchlist', 'warning');
                               }
                             }}
                             className="btn btn-primary btn-sm"
@@ -2530,6 +2545,86 @@ export function WatchRoomPage() {
           </div>
         </div>
       </Modal>
+
+      {/* In-Screen Room Closed Announcement Overlay (No browser alert) */}
+      {roomClosedBanner && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(5, 7, 10, 0.92)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 99999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 'var(--space-4)',
+            animation: 'fadeIn 0.3s ease-out',
+          }}
+        >
+          <div
+            className="card-cinema"
+            style={{
+              maxWidth: '520px',
+              width: '100%',
+              padding: 'var(--space-8)',
+              textAlign: 'center',
+              border: '1px solid rgba(234, 179, 8, 0.4)',
+              background: 'linear-gradient(180deg, #121824 0%, #0c1017 100%)',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(234, 179, 8, 0.1)',
+            }}
+          >
+            <div style={{ fontSize: '3rem', marginBottom: 'var(--space-3)' }}>🎬</div>
+            <h2 style={{ fontSize: 'var(--text-xl)', color: 'var(--accent-gold, #f59e0b)', marginBottom: 'var(--space-2)' }}>
+              Watch Party Concluded
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', lineHeight: '1.6', marginBottom: 'var(--space-6)' }}>
+              {roomClosedBanner}
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--space-3)' }}>
+              <button
+                onClick={() => navigate('/')}
+                className="btn btn-primary btn-md"
+                style={{ padding: '0.6rem 1.8rem', fontWeight: 600 }}
+              >
+                Return to Dashboard Now
+              </button>
+            </div>
+            <div style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)', marginTop: 'var(--space-4)' }}>
+              Redirecting to home automatically in 3 seconds...
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* In-Screen Real-Time Cinema Toast Notification */}
+      {toastMessage && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 'var(--space-6)',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 9999,
+            background: toastMessage.type === 'error' ? 'rgba(239, 68, 68, 0.95)' : toastMessage.type === 'success' ? 'rgba(16, 185, 129, 0.95)' : 'rgba(23, 29, 41, 0.95)',
+            color: '#fff',
+            padding: 'var(--space-3) var(--space-6)',
+            borderRadius: 'var(--radius-full)',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            backdropFilter: 'blur(10px)',
+            fontSize: 'var(--text-sm)',
+            fontWeight: 500,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--space-2)',
+            animation: 'fadeIn 0.2s ease-out',
+          }}
+        >
+          <span>{toastMessage.type === 'error' ? '⚠️' : toastMessage.type === 'success' ? '✓' : 'ℹ️'}</span>
+          <span>{toastMessage.text}</span>
+        </div>
+      )}
     </div>
   );
 }
