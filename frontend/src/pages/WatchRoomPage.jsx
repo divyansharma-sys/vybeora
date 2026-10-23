@@ -218,15 +218,22 @@ export function WatchRoomPage() {
     if (!roomCode) return;
 
     // Use environment variable or current host origin with ws:// protocol
-    const isNativeAndroid = window.location.protocol === 'capacitor:' || (window.location.hostname === 'localhost' && window.navigator?.userAgent?.includes('Android'));
+    const isNativeAndroid = window.location.protocol === 'capacitor:' || (window.location.hostname === 'localhost' && window.navigator?.userAgent?.includes('Android')) || window.location.protocol === 'file:';
     const envWs = import.meta.env.VITE_WS_BASE_URL;
     let wsUrl;
-    if (envWs) {
+    if (envWs && !isNativeAndroid) {
       const cleanBase = envWs.endsWith('/') ? envWs.slice(0, -1) : envWs;
       wsUrl = `${cleanBase}/rooms/${roomCode}/`;
     } else {
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsHost = isNativeAndroid ? '192.168.1.16:8000' : window.location.host;
+      let wsHost = '192.168.1.16:8000';
+      if (!isNativeAndroid && typeof window !== 'undefined') {
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+          wsHost = `${window.location.hostname}:8000`;
+        } else {
+          wsHost = window.location.host;
+        }
+      }
       wsUrl = `${wsProtocol}//${wsHost}/ws/rooms/${roomCode}/`;
     }
 

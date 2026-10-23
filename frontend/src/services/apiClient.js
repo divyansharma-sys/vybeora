@@ -6,12 +6,28 @@
 
 const isNativeAndroid = typeof window !== 'undefined' && (
   window.location.protocol === 'capacitor:' ||
-  window.location.hostname === 'localhost' && window.navigator?.userAgent?.includes('Android')
+  window.location.protocol === 'http:' && window.location.hostname === 'localhost' && window.navigator?.userAgent?.includes('Android') ||
+  window.location.protocol === 'file:'
 );
 
-// In native Android WebView, relative '/api' points to localhost inside device instead of host machine.
-const DEFAULT_HOST = isNativeAndroid ? 'http://192.168.1.16:8000' : '';
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || (DEFAULT_HOST ? `${DEFAULT_HOST}/api` : '/api');
+// If running in Capacitor/Android native app, requests cannot use relative '/api'
+// because there is no Vite dev proxy inside the mobile WebView.
+// It must target the backend host directly.
+const getBaseUrl = () => {
+  // If in native Android app
+  if (isNativeAndroid) {
+    return 'http://192.168.1.16:8000/api';
+  }
+  // If accessing from a phone browser over Wi-Fi (e.g. http://192.168.1.16:5173/)
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    // When using phone browser with Vite on local network:
+    return `http://${window.location.hostname}:8000/api`;
+  }
+  // Standard desktop browser through Vite dev proxy
+  return '/api';
+};
+
+const BASE_URL = getBaseUrl();
 
 export class ApiError extends Error {
   constructor(message, status, details = null) {
