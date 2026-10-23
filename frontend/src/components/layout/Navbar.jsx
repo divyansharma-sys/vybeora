@@ -126,102 +126,99 @@ export function Navbar() {
     navigate('/login');
   };
 
+  const isHomePage = location.pathname === '/';
+
   return (
     <header className="navbar">
       <div className="container navbar-container">
-        {/* Brand Logo & Play-Wave Icon */}
-        <Link to="/" className="brand-link" aria-label="Vybeora Home">
-          <div className="brand-logo-icon">
-            <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M6 6L16 26L26 6"
-                stroke="url(#brandGrad)"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <circle cx="16" cy="11" r="2.5" fill="#38BDF8" />
-              <defs>
-                <linearGradient id="brandGrad" x1="6" y1="6" x2="26" y2="26" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#8B5CF6" />
-                  <stop offset="0.5" stopColor="#3B82F6" />
-                  <stop offset="1" stopColor="#2DD4BF" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-          <span className="brand-title">
-            Vybe<span className="brand-highlight">ora</span>
-          </span>
-        </Link>
+        {/* Brand Logo & Back to Home */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+          {!isHomePage && (
+            <button
+              onClick={() => navigate('/')}
+              className="btn btn-secondary btn-sm"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                borderRadius: 'var(--radius-full)',
+                padding: '0.4rem 0.85rem',
+                fontSize: 'var(--text-xs)',
+                fontWeight: 600,
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid var(--border-subtle)',
+                color: 'var(--text-primary)',
+                cursor: 'pointer',
+                transition: 'all var(--transition-fast)',
+              }}
+              title="Return to Home Dashboard"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              <span>Home</span>
+            </button>
+          )}
 
-        {/* Futuristic Floating Capsule Nav with Sliding Pill Indicator */}
-        <nav className="desktop-nav">
-          <div
-            className="capsule-nav-container"
-            ref={navContainerRef}
-            onMouseLeave={handleMouseLeave}
+          <Link to="/" className="brand-link" aria-label="Vybeora Home">
+            <div className="brand-logo-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M5 4.5V19.5L19 12L5 4.5Z" fill="#0b0f17" />
+              </svg>
+            </div>
+            <div className="brand-text-col">
+              <span className="brand-title">Vybeora</span>
+              <span className="brand-tagline">Same movie. Different places. One vibe.</span>
+            </div>
+          </Link>
+        </div>
+
+        {/* Integrated Global Search Input matching Mockup Header */}
+        <div style={{ flex: 1, maxWidth: '460px', margin: '0 var(--space-4)' }} className="hide-mobile">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const q = e.target.elements.search?.value;
+              if (q) navigate(`/discover?search=${encodeURIComponent(q)}`);
+            }}
+            style={{
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+            }}
           >
-            {/* Magnetic Hover Indicator */}
-            <div
-              className="capsule-hover-pill"
+            <span style={{ position: 'absolute', left: '14px', color: 'var(--text-muted)', fontSize: '0.9rem', pointerEvents: 'none' }}>
+              🔍
+            </span>
+            <input
+              name="search"
+              type="text"
+              placeholder="Search movies, shows, or rooms..."
               style={{
-                transform: `translateX(${hoverPillStyle.left}px)`,
-                width: `${hoverPillStyle.width}px`,
-                opacity: hoverPillStyle.opacity,
+                width: '100%',
+                background: 'rgba(15, 23, 42, 0.7)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: 'var(--radius-full)',
+                padding: '0.55rem 1rem 0.55rem 2.4rem',
+                color: '#ffffff',
+                fontSize: 'var(--text-xs)',
+                outline: 'none',
+                transition: 'all var(--transition-fast)',
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = 'rgba(99, 102, 241, 0.5)';
+                e.target.style.boxShadow = '0 0 14px rgba(99, 102, 241, 0.2)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                e.target.style.boxShadow = 'none';
               }}
             />
+          </form>
+        </div>
 
-            {/* Active Route Gliding Glow Pill */}
-            <div
-              className="capsule-active-pill"
-              style={{
-                transform: `translateX(${pillStyle.left}px)`,
-                width: `${pillStyle.width}px`,
-                opacity: pillStyle.opacity,
-              }}
-            />
-
-            <ul className="nav-capsule-links">
-              {NAV_ITEMS.map((item) => {
-                const badgeText = item.path === '/friends' && incomingFriendRequests.length > 0
-                  ? String(incomingFriendRequests.length)
-                  : item.badge;
-
-                return (
-                  <li
-                    key={item.path}
-                    ref={(el) => (itemRefs.current[item.path] = el)}
-                    onMouseEnter={() => handleMouseEnter(item.path)}
-                  >
-                    <NavLink
-                      to={item.path}
-                      end={item.path === '/'}
-                      className={({ isActive }) => `nav-capsule-item ${isActive ? 'is-active' : ''}`}
-                    >
-                      <span className="nav-item-icon">{item.icon}</span>
-                      <span className="nav-item-label">{item.label}</span>
-                      {badgeText && (
-                        <span
-                          className="nav-item-badge"
-                          style={
-                            item.path === '/friends' && incomingFriendRequests.length > 0
-                              ? { background: 'var(--accent-pink)', color: '#fff', fontWeight: 800 }
-                              : undefined
-                          }
-                        >
-                          {badgeText}
-                        </span>
-                      )}
-                    </NavLink>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </nav>
-
-        {/* Action Controls & Mobile Toggle */}
+        {/* Action Controls & User Account Pill */}
         <div className="nav-actions">
           {isAuthenticated && (
             <div style={{ position: 'relative' }}>
@@ -467,8 +464,9 @@ export function Navbar() {
 
           {/* Direct Android APK Download Button */}
           <a
-            href="/Vybeora.apk"
-            download="Vybeora.apk"
+            href="https://github.com/divyansharma-sys/vybeora/releases/download/v1.0.0-apk/app-debug.apk"
+            target="_blank"
+            rel="noopener noreferrer"
             className="btn btn-outline btn-sm hide-mobile"
             style={{
               borderColor: 'rgba(56, 189, 248, 0.4)',
@@ -482,7 +480,7 @@ export function Navbar() {
               textDecoration: 'none',
               background: 'rgba(56, 189, 248, 0.06)',
             }}
-            title="Download Vybeora Android APK"
+            title="Download Full Vybeora Android App (.apk)"
           >
             <span>🤖</span>
             <span>Get APK</span>
@@ -537,8 +535,9 @@ export function Navbar() {
               My Profile
             </Link>
             <a
-              href="/Vybeora.apk"
-              download="Vybeora.apk"
+              href="https://github.com/divyansharma-sys/vybeora/releases/download/v1.0.0-apk/app-debug.apk"
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => setMobileOpen(false)}
               className="btn btn-outline btn-sm"
               style={{

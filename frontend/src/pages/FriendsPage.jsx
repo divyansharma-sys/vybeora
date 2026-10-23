@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import Avatar from '../components/common/Avatar';
 
 export function FriendsPage() {
+  const navigate = useNavigate();
   const [friendsData, setFriendsData] = useState({
     friends: [],
     incoming_requests: [],
@@ -96,26 +97,53 @@ export function FriendsPage() {
   };
 
   return (
-    <div className="container" style={{ padding: 'var(--space-10) var(--space-4) var(--space-20) var(--space-4)', maxWidth: '860px' }}>
+    <div className="container" style={{ padding: 'var(--space-6) var(--space-4) var(--space-20) var(--space-4)', maxWidth: '860px' }}>
+      {/* Top Navigation Bar with Back Button */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-6)' }}>
+        <button
+          onClick={() => navigate('/')}
+          className="btn btn-secondary btn-sm"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            borderRadius: 'var(--radius-full)',
+            padding: '0.45rem 1rem',
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid var(--border-subtle)',
+            color: 'var(--text-primary)',
+            fontSize: 'var(--text-sm)',
+            cursor: 'pointer',
+            transition: 'all var(--transition-fast)',
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to Home
+        </button>
+      </div>
+
       {/* Header */}
       <div style={{ marginBottom: 'var(--space-8)' }}>
         <div className="badge badge-accent" style={{ marginBottom: 'var(--space-2)' }}>
-          ✦ Community & Connections
+          👥 Social Circle
         </div>
-        <h1 style={{ fontSize: 'var(--text-3xl)', fontWeight: 800 }}>Friends & Movie Buddies</h1>
+        <h1 style={{ fontSize: 'var(--text-3xl)', fontWeight: 800 }}>Buddies & Movie Crew</h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', marginTop: 'var(--space-1)' }}>
-          Connect with friends to invite them to private watch parties with one click.
+          Connect with friends to sync watch parties, invite crew members, and maintain shared movie nights.
         </p>
       </div>
 
       {actionMsg && (
-        <div style={{ padding: 'var(--space-3) var(--space-4)', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: 'var(--radius-md)', color: 'var(--status-healthy)', marginBottom: 'var(--space-6)', fontSize: 'var(--text-sm)' }}>
+        <div style={{ padding: 'var(--space-3) var(--space-4)', background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: 'var(--radius-lg)', color: 'var(--status-healthy)', marginBottom: 'var(--space-6)', fontSize: 'var(--text-sm)' }}>
           ✓ {actionMsg}
         </div>
       )}
 
       {/* Search Bar */}
-      <div className="card-glass" style={{ padding: 'var(--space-5)', marginBottom: 'var(--space-8)' }}>
+      <div className="card-cinema" style={{ padding: 'var(--space-5)', marginBottom: 'var(--space-8)' }}>
         <h3 style={{ fontSize: 'var(--text-base)', marginBottom: 'var(--space-3)' }}>Find Movie Friends</h3>
         <form onSubmit={handleSearch} style={{ display: 'flex', gap: 'var(--space-3)' }}>
           <input

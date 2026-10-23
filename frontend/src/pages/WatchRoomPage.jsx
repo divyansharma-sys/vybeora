@@ -1080,13 +1080,13 @@ export function WatchRoomPage() {
   };
 
   return (
-    <div className="container" style={{ padding: 'var(--space-6) var(--space-4)' }}>
-      {/* Room Header Strip */}
+    <div className="watch-room-dashboard">
+      {/* Upper Context Bar */}
       <div
-        className="card-glass"
+        className="card-cinema"
         style={{
           padding: 'var(--space-3) var(--space-5)',
-          marginBottom: 'var(--space-5)',
+          marginBottom: 'var(--space-4)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -1095,30 +1095,48 @@ export function WatchRoomPage() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-          {wsConnected ? (
-            <span className="badge badge-live">
-              <span className="pulse-dot"></span>
-              LIVE SYNC
-            </span>
-          ) : (
-            <span className="badge" style={{ background: 'rgba(234, 179, 8, 0.1)', color: 'var(--status-warning)' }}>
-              LOCAL FALLBACK
-            </span>
-          )}
-          <h2 style={{ fontSize: 'var(--text-lg)', margin: 0, color: 'var(--text-primary)' }}>
+          <Link
+            to="/"
+            className="btn btn-secondary btn-sm"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              borderRadius: 'var(--radius-full)',
+              padding: '0.35rem 0.85rem',
+              fontSize: 'var(--text-xs)',
+              fontWeight: 600,
+              background: 'rgba(255, 255, 255, 0.06)',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--text-primary)',
+            }}
+            title="Leave room and return to Home"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Home
+          </Link>
+          <span className="badge badge-accent">
+            🎬 Private Watch Lounge
+          </span>
+          <h2 style={{ fontSize: 'var(--text-lg)', margin: 0, color: 'var(--text-primary)', fontWeight: 700 }}>
             {activeMovie?.title || room.movie_title || room.title}
           </h2>
-          {activeMovie?.is_local_device && (
-            <span className="badge" style={{ background: 'rgba(236, 72, 153, 0.15)', color: '#f472b6', border: '1px solid rgba(236, 72, 153, 0.3)' }}>
-              📱 Local Device Only
+          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
+            Room: <code style={{ color: 'var(--accent-violet-light)' }}>#{room.code}</code>
+          </span>
+          {wsConnected ? (
+            <span className="badge badge-synced">
+              <span className="pulse-dot"></span>
+              Live Sync
+            </span>
+          ) : (
+            <span className="badge" style={{ background: 'var(--status-warning-bg)', color: 'var(--status-warning)' }}>
+              Syncing...
             </span>
           )}
-          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
-            Room: <code style={{ color: 'var(--accent-blue)' }}>#{room.code}</code>
-          </span>
-          <span className="badge" style={{ background: wsConnected ? 'var(--status-healthy-bg)' : 'var(--status-warning-bg)', color: wsConnected ? 'var(--status-healthy)' : 'var(--status-warning)', fontSize: '0.62rem' }}>
-            ● {wsConnected ? 'Channels Connected' : 'Connecting Sync...'}
-          </span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
@@ -1193,11 +1211,86 @@ export function WatchRoomPage() {
         </div>
       </div>
 
-      {/* Main Grid: Player Stage & Social Panel */}
+      {/* Main Grid: Left Navigation Rail, Player Stage & Interactive Right Rail */}
       <div className="watch-room-layout">
-        {/* Left: Video Player Stage */}
+        {/* 1. Left Sidebar Rail */}
+        <aside className="cinema-left-rail">
+          <div className="left-nav-card">
+            <Link to="/" className="left-nav-item active">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              </svg>
+              Home
+            </Link>
+            <button onClick={() => { setActiveTab('watchlist'); setWatchlistModalOpen(true); }} className="left-nav-item" style={{ width: '100%', textAlign: 'left' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2-2z" />
+              </svg>
+              My Watchlist
+            </button>
+            <Link to="/free-movies" className="left-nav-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+              </svg>
+              Explore
+            </Link>
+            <Link to="/friends" className="left-nav-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              Friends
+            </Link>
+            <Link to="/create-room" className="left-nav-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              Private Rooms
+            </Link>
+          </div>
+
+          {/* Quick Rooms Section */}
+          <div className="left-nav-card">
+            <div className="left-section-title">
+              <span>My Rooms</span>
+              <Link to="/create-room" className="btn btn-primary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.68rem', borderRadius: 'var(--radius-full)' }}>
+                + New
+              </Link>
+            </div>
+            <div className="room-mini-card active">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <span style={{ fontWeight: 600, color: '#fff', fontSize: '0.8rem' }}>{room.title || 'Movie Night'}</span>
+                <span style={{ fontSize: '0.68rem', color: 'var(--accent-emerald)' }}>● {participantsList.length || 1} watching</span>
+              </div>
+              <span style={{ fontSize: '0.75rem' }}>›</span>
+            </div>
+          </div>
+        </aside>
+
+        {/* 2. Center: Video Player Stage */}
         <div className="video-stage-container">
           <div className="cinema-screen-wrapper">
+            {/* Top Film Bar Overlay */}
+            <div className="film-info-tag">
+              <div style={{ width: '28px', height: '28px', borderRadius: 'var(--radius-md)', background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffffff">
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+              </div>
+              <div>
+                <div className="film-info-title">{activeMovie?.title || room.movie_title || room.title}</div>
+                <div className="film-info-meta">{activeMovie?.genre || room.genre || 'Sci-Fi · Cinema'} · In Sync</div>
+              </div>
+            </div>
+
+            <div className="film-synced-indicator">
+              <span className="pulse-dot"></span>
+              Synced 📶
+            </div>
             {/* Actual Playable Video Player */}
             <VideoPlayer
               movie={activeMovie}
@@ -1350,152 +1443,149 @@ export function WatchRoomPage() {
             </div>
           </div>
 
-          {/* Synchronized Live Voice Chat Dock */}
-          <div
-            className="card-cinema"
-            style={{
-              padding: 'var(--space-3) var(--space-5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: 'var(--space-3)',
-              border: inVoice ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid var(--border-subtle)',
-              background: inVoice ? 'rgba(8, 15, 30, 0.95)' : 'var(--bg-card)',
-              boxShadow: inVoice ? '0 0 15px rgba(56, 189, 248, 0.15)' : 'none',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                <span style={{ fontSize: '1.1rem' }}>🎙️</span>
+          {/* Lower Cinema Stage: Presence Bar & Voice Hub */}
+          <div className="cinema-lower-stage">
+            <div className="room-stage-header">
+              <div className="room-stage-title-wrap">
+                <div style={{ width: '38px', height: '38px', borderRadius: 'var(--radius-xl)', background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffffff">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </div>
                 <div>
-                  <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: inVoice ? 'var(--accent-aurora)' : 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    Live Room Voice
-                    {inVoice && (
-                      <span className="badge badge-healthy" style={{ fontSize: '0.6rem', padding: '1px 6px' }}>
-                        ● Connected
-                      </span>
-                    )}
+                  <div style={{ fontWeight: 700, fontSize: 'var(--text-base)', color: '#ffffff' }}>
+                    {room.title || 'Movie Night'} 🔒
                   </div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
-                    {Object.keys(voiceParticipants).length === 0
-                      ? 'No one in voice. Jump in to chat!'
-                      : `${Object.keys(voiceParticipants).length} buddy talking live`}
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    Private Room · {participantsList.length || 1}/8 watching
                   </div>
                 </div>
               </div>
 
-              {/* Voice participants chips with animated speaking rings */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-                {Object.entries(voiceParticipants).map(([uName, state]) => (
-                  <div
-                    key={uName}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '5px',
-                      padding: '3px 8px',
-                      borderRadius: 'var(--radius-full)',
-                      background: state.speaking ? 'rgba(56, 189, 248, 0.25)' : 'rgba(255, 255, 255, 0.05)',
-                      border: state.speaking ? '1px solid var(--accent-aurora)' : '1px solid rgba(255, 255, 255, 0.08)',
-                      transition: 'all 0.2s ease',
-                      boxShadow: state.speaking ? '0 0 10px rgba(56, 189, 248, 0.5)' : 'none',
-                    }}
-                  >
-                    <span style={{ fontSize: '0.7rem' }}>
-                      {state.muted ? '🔇' : state.speaking ? '🗣️' : '🎧'}
-                    </span>
-                    <span style={{ fontSize: '0.7rem', fontWeight: 600, color: state.speaking ? 'var(--accent-aurora)' : 'var(--text-secondary)' }}>
-                      {uName === currentUsername ? 'You' : uName}
-                    </span>
-                  </div>
-                ))}
+              <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+                <Link to="/" className="btn btn-secondary btn-sm">
+                  Leave Room
+                </Link>
+                <button
+                  onClick={() => {
+                    setInviteModalOpen(true);
+                    loadFriendsForInvite();
+                  }}
+                  className="btn btn-primary btn-sm"
+                >
+                  👥 Invite Friends
+                </button>
               </div>
             </div>
 
-            {/* Voice Control Buttons */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-              {voiceError && (
-                <span style={{ fontSize: '0.7rem', color: 'var(--status-error)', maxWidth: '240px' }}>
-                  ⚠️ {voiceError}
-                </span>
-              )}
+            {/* Presence Avatars Row & Live Voice Waves */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 220px', gap: 'var(--space-6)', alignItems: 'center' }}>
+              {/* Left: Participant Presence Nodes */}
+              <div className="presence-avatars-row">
+                {/* Current User */}
+                <div className="participant-presence-node">
+                  <div className={`avatar-presence-ring ${voiceParticipants[currentUsername]?.speaking ? 'speaking' : ''}`}>
+                    <Avatar name={currentUsername} size="lg" />
+                  </div>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#ffffff' }}>You</span>
+                  <span style={{ fontSize: '0.68rem', color: voiceParticipants[currentUsername]?.speaking ? 'var(--accent-cyan)' : 'var(--text-muted)' }}>
+                    {voiceParticipants[currentUsername]?.speaking ? 'Speaking' : 'Watching'}
+                  </span>
+                </div>
 
-              {!inVoice ? (
-                <button
-                  onClick={handleJoinVoice}
-                  disabled={voiceConnecting}
-                  className="btn btn-primary btn-sm"
-                  style={{
-                    fontSize: '0.75rem',
-                    padding: '0.4rem 0.9rem',
-                    background: 'linear-gradient(135deg, var(--accent-violet) 0%, var(--accent-blue) 100%)',
-                  }}
-                  title="Connect your microphone and speak with buddies"
-                >
-                  {voiceConnecting ? 'Connecting Mic...' : '🎙️ Join Voice'}
-                </button>
-              ) : (
-                <>
-                  <button
-                    onClick={handleToggleMute}
-                    className="btn btn-sm"
-                    style={{
-                      fontSize: '0.75rem',
-                      padding: '0.4rem 0.75rem',
-                      background: isMuted ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)',
-                      color: isMuted ? 'var(--status-error)' : 'var(--status-healthy)',
-                      border: isMuted ? '1px solid rgba(239, 68, 68, 0.4)' : '1px solid rgba(16, 185, 129, 0.4)',
-                    }}
-                    title={isMuted ? 'Unmute microphone' : 'Mute microphone'}
-                  >
-                    {isMuted ? '🔇 Unmute' : '🎙️ Mute'}
-                  </button>
-                  <button
-                    onClick={handleLeaveVoice}
-                    className="btn btn-outline btn-sm"
-                    style={{
-                      fontSize: '0.75rem',
-                      padding: '0.4rem 0.75rem',
-                      color: 'var(--text-muted)',
-                      borderColor: 'rgba(255, 255, 255, 0.15)',
-                    }}
-                    title="Disconnect from voice chat"
-                  >
-                    Leave Voice
-                  </button>
-                </>
-              )}
+                {/* Other Participants */}
+                {participantsList.filter((p) => p.username !== currentUsername).map((p) => {
+                  const isSpeaking = voiceParticipants[p.username]?.speaking;
+                  return (
+                    <div key={p.id || p.username} className="participant-presence-node">
+                      <div className={`avatar-presence-ring ${isSpeaking ? 'speaking' : ''}`}>
+                        <Avatar name={p.username} size="lg" />
+                      </div>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#ffffff' }}>{p.username}</span>
+                      <span style={{ fontSize: '0.68rem', color: isSpeaking ? 'var(--accent-cyan)' : 'var(--text-muted)' }}>
+                        {isSpeaking ? 'Speaking' : 'Watching'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Right: Dedicated Voice Chat Control Hub */}
+              <div className="voice-chat-hub">
+                <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: inVoice ? 'linear-gradient(135deg, #a855f7, #6366f1)' : 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: inVoice ? '0 0 16px rgba(168, 85, 247, 0.4)' : 'none' }}>
+                  <span style={{ fontSize: '1.25rem' }}>🎙️</span>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 'var(--text-sm)', color: '#ffffff' }}>Voice Chat</div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                    {Object.keys(voiceParticipants).length} in room
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                  {!inVoice ? (
+                    <button
+                      onClick={handleJoinVoice}
+                      disabled={voiceConnecting}
+                      className="btn btn-primary btn-sm"
+                      style={{ fontSize: '0.72rem', padding: '0.35rem 0.75rem' }}
+                    >
+                      {voiceConnecting ? 'Joining...' : 'Join Voice'}
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={handleToggleMute}
+                        className="btn btn-secondary btn-sm"
+                        style={{ fontSize: '0.72rem', padding: '0.35rem 0.65rem' }}
+                      >
+                        {isMuted ? '🔇 Unmute' : '🎙️ Mute'}
+                      </button>
+                      <button
+                        onClick={handleLeaveVoice}
+                        className="btn btn-ghost btn-sm"
+                        style={{ fontSize: '0.72rem', padding: '0.35rem 0.65rem', color: 'var(--status-error)' }}
+                      >
+                        Leave
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Waveform Tagline Banner */}
+            <div className="cinema-waveform-banner">
+              <svg width="120" height="24" viewBox="0 0 120 24" fill="none">
+                <path d="M10 12C20 6 30 18 40 12C50 6 60 18 70 12C80 4 90 20 100 12C110 6 115 14 120 12" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              <span className="waveform-tagline">Same movie. Different places. One vibe.</span>
             </div>
           </div>
         </div>
 
         {/* Right: Live Chat & Attendee Panel */}
-        <div className="room-side-panel">
-          <div className="side-panel-header">
-            <div className="side-panel-tabs">
-              <button
-                onClick={() => setActiveTab('chat')}
-                className={activeTab === 'chat' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'}
-                style={{ borderRadius: 'var(--radius-full)' }}
-              >
-                Live Chat
-              </button>
-              <button
-                onClick={() => setActiveTab('attendees')}
-                className={activeTab === 'attendees' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'}
-                style={{ borderRadius: 'var(--radius-full)' }}
-              >
-                Watchers ({participantsList.length || 1})
-              </button>
-              <button
-                onClick={() => setActiveTab('watchlist')}
-                className={activeTab === 'watchlist' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'}
-                style={{ borderRadius: 'var(--radius-full)' }}
-              >
-                🗳️ Watchlist ({watchlistItems.length})
-              </button>
-            </div>
+        <div className="cinema-right-rail">
+          <div className="rail-tabs-bar">
+            <button
+              onClick={() => setActiveTab('chat')}
+              className={`rail-tab-btn ${activeTab === 'chat' ? 'active' : ''}`}
+            >
+              💬 Chat
+            </button>
+            <button
+              onClick={() => setActiveTab('attendees')}
+              className={`rail-tab-btn ${activeTab === 'attendees' ? 'active' : ''}`}
+            >
+              🎙️ Voice ({Object.keys(voiceParticipants).length})
+            </button>
+            <button
+              onClick={() => setActiveTab('watchlist')}
+              className={`rail-tab-btn ${activeTab === 'watchlist' ? 'active' : ''}`}
+            >
+              👥 Members ({participantsList.length || 1})
+            </button>
           </div>
 
           {activeTab === 'chat' ? (

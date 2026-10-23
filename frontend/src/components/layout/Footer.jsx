@@ -24,7 +24,7 @@ export function Footer() {
               <ul>
                 <li><Link to="/discover">Discover Movies</Link></li>
                 <li><Link to="/create-room">Create Room</Link></li>
-                <li><a href="/Vybeora.apk" download="Vybeora.apk" style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>🤖 Download Android APK</a></li>
+                <li><a href="https://github.com/divyansharma-sys/vybeora/releases/download/v1.0.0-apk/app-debug.apk" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>🤖 Download Android APK</a></li>
               </ul>
             </div>
             <div className="footer-col">

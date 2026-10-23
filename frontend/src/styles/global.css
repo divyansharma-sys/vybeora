@@ -20,14 +20,13 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-sans);
-  line-height: 1.6;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   background-image: 
-    radial-gradient(circle 800px at 50% -100px, rgba(139, 92, 246, 0.18), transparent 70%),
-    radial-gradient(circle 600px at 90% 400px, rgba(56, 189, 248, 0.1), transparent 60%),
-    radial-gradient(circle 700px at 10% 900px, rgba(45, 212, 191, 0.08), transparent 65%);
+    radial-gradient(circle 900px at 50% -250px, rgba(226, 184, 116, 0.04), transparent 70%),
+    radial-gradient(circle 800px at 90% 400px, rgba(20, 184, 166, 0.03), transparent 60%);
   background-attachment: fixed;
 }
 

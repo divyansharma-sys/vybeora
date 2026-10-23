@@ -72,9 +72,36 @@ export function FreeMoviesPage() {
   };
 
   return (
-    <div className="container" style={{ padding: 'var(--space-12) 0 var(--space-20) 0' }}>
+    <div className="container" style={{ padding: 'var(--space-8) 0 var(--space-20) 0' }}>
+      {/* Top Navigation Bar with Back Button */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-6)' }}>
+        <button
+          onClick={() => navigate('/')}
+          className="btn btn-secondary btn-sm"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            borderRadius: 'var(--radius-full)',
+            padding: '0.45rem 1rem',
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid var(--border-subtle)',
+            color: 'var(--text-primary)',
+            fontSize: 'var(--text-sm)',
+            cursor: 'pointer',
+            transition: 'all var(--transition-fast)',
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to Home
+        </button>
+      </div>
+
       {/* Header Banner */}
-      <div style={{ textAlign: 'center', maxWidth: '780px', margin: '0 auto var(--space-10) auto' }}>
+      <div style={{ textAlign: 'center', maxWidth: '780px', margin: '0 auto var(--space-8) auto' }}>
         <div className="badge badge-aurora" style={{ marginBottom: 'var(--space-3)' }}>
           ✓ 100% Free & Legitimate Streaming
         </div>
