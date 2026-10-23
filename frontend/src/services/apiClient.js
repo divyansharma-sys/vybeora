@@ -18,20 +18,18 @@ const getBaseUrl = () => {
   if (import.meta.env.VITE_API_BASE_URL && import.meta.env.VITE_API_BASE_URL !== '/api') {
     return import.meta.env.VITE_API_BASE_URL;
   }
+  // If accessing from Vercel deployment (e.g. vybeora.vercel.app)
+  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
+    return 'https://vybeora.onrender.com/api';
+  }
   // If in native Android app
   if (isNativeAndroid) {
-    return 'http://192.168.1.16:8000/api';
+    return 'https://vybeora.onrender.com/api';
   }
   // If accessing from a phone browser over Wi-Fi (e.g. http://192.168.1.16:5173/)
   if (typeof window !== 'undefined') {
     const host = window.location.hostname;
     if (host !== 'localhost' && host !== '127.0.0.1') {
-      // If deployed on Vercel or cloud domain (e.g. vybeora.vercel.app)
-      if (host.includes('vercel.app')) {
-        // Fallback to configured cloud backend or relative /api if reverse proxy configured
-        return import.meta.env.VITE_PROD_API_BASE_URL || '/api';
-      }
-      // When testing on local Wi-Fi (e.g. 192.168.x.x)
       return `http://${host}:8000/api`;
     }
   }

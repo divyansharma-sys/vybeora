@@ -225,16 +225,24 @@ export function WatchRoomPage() {
       const cleanBase = envWs.endsWith('/') ? envWs.slice(0, -1) : envWs;
       wsUrl = `${cleanBase}/rooms/${roomCode}/`;
     } else {
-      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      let wsHost = '192.168.1.16:8000';
-      if (!isNativeAndroid && typeof window !== 'undefined') {
-        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-          wsHost = `${window.location.hostname}:8000`;
-        } else {
-          wsHost = window.location.host;
+      let wsUrlCalculated;
+      if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
+        wsUrlCalculated = `wss://vybeora.onrender.com/ws/rooms/${roomCode}/`;
+      } else if (isNativeAndroid) {
+        wsUrlCalculated = `wss://vybeora.onrender.com/ws/rooms/${roomCode}/`;
+      } else {
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        let wsHost = '192.168.1.16:8000';
+        if (typeof window !== 'undefined') {
+          if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            wsHost = `${window.location.hostname}:8000`;
+          } else {
+            wsHost = window.location.host;
+          }
         }
+        wsUrlCalculated = `${wsProtocol}//${wsHost}/ws/rooms/${roomCode}/`;
       }
-      wsUrl = `${wsProtocol}//${wsHost}/ws/rooms/${roomCode}/`;
+      wsUrl = wsUrlCalculated;
     }
 
     const socket = new WebSocket(wsUrl);
