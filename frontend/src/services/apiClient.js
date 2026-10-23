@@ -19,9 +19,9 @@ const getBaseUrl = () => {
     return import.meta.env.VITE_API_BASE_URL;
   }
   // If accessing from Vercel deployment (e.g. vybeora.vercel.app),
-  // use relative '/api' so vercel.json rewrites forward the requests to Render seamlessly without CORS issues
+  // send API calls directly to Render backend (now permitted by production CORS)
   if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
-    return '/api';
+    return 'https://vybeora.onrender.com/api';
   }
   // If in native Android app
   if (isNativeAndroid) {
