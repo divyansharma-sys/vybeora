@@ -24,6 +24,7 @@ export function CreateRoomPage({ initialTab = 'create' }) {
   const [videoSourceType, setVideoSourceType] = useState('catalog'); // 'catalog' | 'device'
   const [selectedMovieId, setSelectedMovieId] = useState('');
   const [localFile, setLocalFile] = useState(null);
+  const [devicePlaybackMode, setDevicePlaybackMode] = useState('instant'); // 'instant' | 'upload'
   const [fileError, setFileError] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState('');
@@ -117,8 +118,30 @@ export function CreateRoomPage({ initialTab = 'create' }) {
       const response = await roomService.createRoom(payload);
       const code = response?.code;
 
-      // If video source is local device, upload file and link to room
+      // If video source is local device:
       if (videoSourceType === 'device' && localFile) {
+        if (devicePlaybackMode === 'instant') {
+          // Instant Mode: Store object URL and file metadata in session storage so watch room starts immediately!
+          const objUrl = URL.createObjectURL(localFile);
+          window.__vybeora_pending_local_movie = {
+            roomCode: code,
+            name: localFile.name,
+            objectUrl: objUrl,
+            file: localFile,
+          };
+          try {
+            sessionStorage.setItem(`vybeora_local_${code}`, JSON.stringify({
+              title: localFile.name.replace(/\.[^/.]+$/, ''),
+              name: localFile.name,
+              size: localFile.size,
+            }));
+          } catch (_) {}
+          // Immediately enter watch party lounge without waiting for upload!
+          navigate(`/rooms/${code}`);
+          return;
+        }
+
+        // Full Sync Mode: Upload to backend
         setUploadStatus('Uploading your video to the watch room...');
         const formData = new FormData();
         formData.append('video_file', localFile);
@@ -348,12 +371,51 @@ export function CreateRoomPage({ initialTab = 'create' }) {
                   </label>
 
                   {localFile ? (
-                    <div style={{ marginTop: 'var(--space-2)' }}>
+                    <div style={{ marginTop: 'var(--space-3)' }}>
                       <div style={{ fontWeight: 600, color: 'var(--accent-aurora)', fontSize: 'var(--text-sm)' }}>
                         Selected: {localFile.name}
                       </div>
-                      <div style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)' }}>
-                        Size: {(localFile.size / (1024 * 1024)).toFixed(1)} MB • Will be uploaded & synced across all room viewers!
+                      <div style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)', marginBottom: 'var(--space-3)' }}>
+                        Size: {(localFile.size / (1024 * 1024)).toFixed(1)} MB
+                      </div>
+
+                      {/* Mode selection: Instant vs Cloud Upload */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-2)', textAlign: 'left', marginTop: 'var(--space-2)' }}>
+                        <div
+                          onClick={() => setDevicePlaybackMode('instant')}
+                          style={{
+                            padding: 'var(--space-2) var(--space-3)',
+                            borderRadius: 'var(--radius-lg)',
+                            border: devicePlaybackMode === 'instant' ? '1px solid var(--accent-aurora)' : '1px solid var(--border-subtle)',
+                            background: devicePlaybackMode === 'instant' ? 'rgba(56, 189, 248, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            ⚡ Instant Launch (Recommended)
+                          </div>
+                          <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                            Zero wait time! Plays immediately from your computer and syncs playback.
+                          </div>
+                        </div>
+
+                        <div
+                          onClick={() => setDevicePlaybackMode('upload')}
+                          style={{
+                            padding: 'var(--space-2) var(--space-3)',
+                            borderRadius: 'var(--radius-lg)',
+                            border: devicePlaybackMode === 'upload' ? '1px solid var(--accent-aurora)' : '1px solid var(--border-subtle)',
+                            background: devicePlaybackMode === 'upload' ? 'rgba(56, 189, 248, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <div style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            ☁️ Upload to Cloud
+                          </div>
+                          <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                            Uploads full video to server storage before launching.
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ) : (
@@ -438,7 +500,9 @@ export function CreateRoomPage({ initialTab = 'create' }) {
               >
                 {loading
                   ? (uploadStatus || 'Creating in Database...')
-                  : (videoSourceType === 'device' ? '🚀 Upload Video & Launch Room' : 'Launch Watch Party & Get Link')}
+                  : (videoSourceType === 'device'
+                      ? (devicePlaybackMode === 'instant' ? '⚡ Instant Launch Room (Zero Wait Time)' : '☁️ Upload Video & Launch Room')
+                      : 'Launch Watch Party & Get Link')}
               </button>
             </div>
           </form>

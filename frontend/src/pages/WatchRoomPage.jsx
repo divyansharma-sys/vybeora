@@ -125,8 +125,21 @@ export function WatchRoomPage() {
       }
       setRoom(roomData);
 
-      // If room has uploaded video(s) and no catalog movie, activate the latest uploaded video
-      if (!data?.movie_details && data?.uploaded_videos && data.uploaded_videos.length > 0) {
+      // Check if user launched this room instantly with a local movie file
+      const pendingLocal = window.__vybeora_pending_local_movie;
+      if (pendingLocal && pendingLocal.roomCode === roomCode) {
+        localVideoObjectUrlRef.current = pendingLocal.objectUrl;
+        setActiveVideoSource({
+          title: `${pendingLocal.name.replace(/\.[^/.]+$/, '')} (Instant Play)`,
+          source_type: 'direct_video',
+          source_url: pendingLocal.objectUrl,
+          source_video_id: 'local_instant',
+          license_info: 'Local Device Playback',
+          is_local_device: true,
+        });
+        window.__vybeora_pending_local_movie = null;
+      } else if (!data?.movie_details && data?.uploaded_videos && data.uploaded_videos.length > 0) {
+        // If room has uploaded video(s) and no catalog movie, activate the latest uploaded video
         const latestUpload = data.uploaded_videos[data.uploaded_videos.length - 1];
         if (latestUpload?.playback_url) {
           setActiveVideoSource({
